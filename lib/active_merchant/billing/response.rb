@@ -13,9 +13,9 @@ module ActiveMerchant #:nodoc:
       def test?
         @test
       end
-      
+
       def message
-        test? ? "#{message} *** TEST TRANSACTION ***" : message
+        test? ? "#{@message} *** TEST TRANSACTION ***" : @message
       end
 
       def fraud_review?
