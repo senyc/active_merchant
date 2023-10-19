@@ -68,6 +68,11 @@ module ActiveMerchant #:nodoc:
         @number = (empty?(value) ? value : value.to_s.gsub(/[^\d]/, ""))
       end
 
+      # Returns or sets the auth token for the transaction
+      #
+      # @return [String]
+      attr_accessor :authentication_token
+
       # Returns or sets the expiry month for the card.
       #
       # @return [Integer]
