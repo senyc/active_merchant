@@ -10,12 +10,12 @@ module ActiveMerchant # :nodoc:
         super
       end
 
-      # def purchase(amount, payment_method, options = {})
-      #   MultiResponse.run do |r|
-      #     r.process { authorize(amount, payment_method, options) }
-      #     r.process { capture(amount, r.authorization, options) }
-      #   end
-      # end
+      def purchase(amount, payment_method, options = {})
+        MultiResponse.run do |r|
+          r.process { authorize(amount, payment_method, options) }
+          r.process { capture(amount, r.authorization, options) }
+        end
+      end
 
       def headers
         {
