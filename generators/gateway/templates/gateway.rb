@@ -18,6 +18,15 @@ module ActiveMerchant #:nodoc:
         super
       end
 
+      def get_vals(money, payment, options={})
+        post = {}
+        add_invoice(post, money, options)
+        add_payment(post, payment)
+        add_address(post, payment, options)
+        add_customer_data(post, options)
+        post
+      end
+
       def purchase(money, payment, options={})
         post = {}
         add_invoice(post, money, options)
@@ -87,8 +96,6 @@ module ActiveMerchant #:nodoc:
 
       def commit(action, parameters)
         url = (test? ? test_url : live_url)
-        puts action
-        puts parameters
         response = parse(ssl_post(url, post_data(action, parameters)))
 
         Response.new(
