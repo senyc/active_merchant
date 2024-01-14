@@ -9,13 +9,6 @@ module ActiveMerchant # :nodoc:
         requires!(options, :secret_key)
         super
       end
-
-      def headers
-        {
-          'Authorization' => @options[:secret_key],
-          'Content-Type' => 'application/json'
-        }
-      end
     end
   end
 end

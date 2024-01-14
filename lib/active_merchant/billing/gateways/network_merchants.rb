@@ -1,10 +1,10 @@
-module ActiveMerchant #:nodoc:
-  module Billing #:nodoc:
+module ActiveMerchant # :nodoc:
+  module Billing # :nodoc:
     class NetworkMerchantsGateway < Gateway
       self.live_url = self.test_url = 'https://sandbox.gotnpgateway.com/api/transaction'
 
       self.supported_countries = ['US']
-      self.supported_cardtypes = [:visa, :master, :american_express, :discover]
+      self.supported_cardtypes = %i[visa master american_express discover]
 
       self.homepage_url = 'http://www.nmi.com/'
       self.display_name = 'Network Merchants (NMI)'
@@ -57,7 +57,7 @@ module ActiveMerchant #:nodoc:
         post = {}
         add_order(post, options)
         add_address(post, options)
-        add_shipping_address(post, options)
+        # add_shipping_address(post, options)
         add_payment_method(post, creditcard_or_vault_id, options)
         add_amount(post, money, options)
         post
@@ -74,7 +74,7 @@ module ActiveMerchant #:nodoc:
         post
       end
 
-      def build_void_post(authorization, options)
+      def build_void_post(authorization, _options)
         post = {}
         post[:transactionid] = authorization
         post
@@ -95,27 +95,26 @@ module ActiveMerchant #:nodoc:
         post
       end
 
-      def build_unstore_post(customer_vault_id, options)
+      def build_unstore_post(customer_vault_id, _options)
         post = {}
         post['customer_vault_id'] = customer_vault_id
         post
       end
 
       def add_order(post, options)
-        post[:orderid] = options[:order_id]
-        post[:orderdescription] = options[:description]
+        post[:order_id] = options[:order_id]
+        post[:description] = options[:description]
       end
 
       def add_address(post, options)
-        post[:email] = options[:email]
-        post[:ipaddress] = options[:ip]
+        post[:email_address] = options[:email]
+        post[:ip_address] = options[:ip]
 
         address = options[:billing_address] || options[:address] || {}
-        post[:address1] = address[:address1]
-        post[:address2] = address[:address2]
+        post[:address_line_1] = address[:address1]
         post[:city] = address[:city]
         post[:state] = address[:state].blank? ? 'n/a' : address[:state]
-        post[:zip] = address[:zip]
+        post[:postal_code] = address[:zip]
         post[:country] = address[:country]
         post[:phone] = address[:phone]
       end
@@ -189,22 +188,28 @@ module ActiveMerchant #:nodoc:
       end
 
       def commit_vault(action, parameters)
-        commit(nil, parameters.merge(:customer_vault => action))
+        commit(nil, parameters.merge(customer_vault: action))
+      end
+
+      def headers
+        {
+          'Authorization' => @options[:secret_key],
+          'Content-Type' => 'application/json'
+        }
       end
 
       def commit(action, parameters)
-        raw = parse(ssl_post(self.live_url, build_request(action, parameters)))
+        raw = parse(ssl_post(live_url, build_request(action, parameters), headers))
 
         success = (raw['response'] == ResponseCodes::APPROVED)
 
         authorization = authorization_from(success, parameters, raw)
 
         Response.new(success, raw['responsetext'], raw,
-          :test => test?,
-          :authorization => authorization,
-          :avs_result => { :code => raw['avsresponse']},
-          :cvv_result => raw['cvvresponse']
-        )
+                     test: test?,
+                     authorization: authorization,
+                     avs_result: { code: raw['avsresponse'] },
+                     cvv_result: raw['cvvresponse'])
       end
 
       def build_request(action, parameters)
@@ -217,7 +222,7 @@ module ActiveMerchant #:nodoc:
         return nil unless success
 
         authorization = response['transactionid']
-        if(parameters[:customer_vault] && (authorization.nil? || authorization.empty?))
+        if parameters[:customer_vault] && (authorization.nil? || authorization.empty?)
           authorization = response['customer_vault_id']
         end
 
@@ -238,4 +243,3 @@ module ActiveMerchant #:nodoc:
     end
   end
 end
-
