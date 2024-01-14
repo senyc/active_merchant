@@ -1,7 +1,7 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class NetworkMerchantsGateway < Gateway
-      self.live_url = self.test_url = 'https://secure.networkmerchants.com/api/transact.php'
+      self.live_url = self.test_url = 'https://sandbox.gotnpgateway.com/api/transaction'
 
       self.supported_countries = ['US']
       self.supported_cardtypes = [:visa, :master, :american_express, :discover]

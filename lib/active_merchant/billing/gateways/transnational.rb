@@ -1,7 +1,7 @@
 module ActiveMerchant # :nodoc:
   module Billing # :nodoc:
-    class TransnationalGateway < Gateway
-      self.homepage_url = 'https://sandbox.fluidpay.com/api/transaction'
+    class TransnationalGateway < NetworkMerchantsGateway
+      self.homepage_url = 'https://sandbox.gotnpgateway.com/api/transaction"'
       self.display_name = 'Transnational'
       self.supported_countries = ['US']
 
