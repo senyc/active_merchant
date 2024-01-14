@@ -20,7 +20,7 @@ module ActiveMerchant # :nodoc:
       def headers
         {
           'Authorization' => @options[:secret_key],
-          'Content-Type' => 'application/json;charset=UTF-8'
+          'Content-Type' => 'application/json'
         }
       end
     end
